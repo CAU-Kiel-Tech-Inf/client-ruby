@@ -10,59 +10,35 @@ RSpec.describe GameStateHelpers do
   it 'creates a gamestate from a string board representation' do
     board =
       <<~BOARD
-        R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B B
-        R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B
-        R R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        G _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ Y
-        G G G _ _ _ _ _ _ _ _ _ _ _ _ _ _ Y Y Y
+      RC RS RR RC RG RG RR RS 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      BS BR BG BC BR BG BC BS 
       BOARD
     state_from_string!(board, gamestate)
     expect(gamestate.board.field(0, 0)).to be_a(Field)
     expect(gamestate.board.field(0, 0).color).to eq(Color::RED)
     expect(gamestate.board.field(1, 0)).to be_a(Field)
-    expect(gamestate.board.field(1, 0).color).to be_nil
-    expect(gamestate.board.field(19, 0)).to be_a(Field)
-    expect(gamestate.board.field(19, 0).color).to eq(Color::BLUE)
+    expect(gamestate.board.field(1, 1).color).to be_nil
+    expect(gamestate.board.field(0, 7)).to be_a(Field)
+    expect(gamestate.board.field(0, 7).color).to eq(Color::BLUE)
   end
 
   it 'raises an error on illegal format' do
     board =
       <<~BOARD
-        R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B B
-        R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B
-        R R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ B
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ X _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ Y _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-        G _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ Y
-        G G G _ _ _ _ _ _ _ _ _ _ _ _ _ _ Y Y Y
+      RC RS RR RC RG RG RR RS 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ EY __ __ __ __ 
+      __ __ __ __ UWU __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      __ __ __ __ __ __ __ __ 
+      BS BR BG BC BR BG BC BS 
       BOARD
     expect do
       state_from_string!(board, gamestate)

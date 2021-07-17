@@ -5,7 +5,7 @@ require_relative './util/constants'
 require_relative 'game_state'
 require_relative 'field'
 
-# Ein Spielbrett fuer Blokus
+# Ein Spielbrett fuer Ostseeschach 
 class Board
   include Constants
   # @!attribute [r] fields
@@ -15,23 +15,17 @@ class Board
   attr_reader :fields
 
   # @!attribute [r] deployed_blue_pieces
-  # @return [Array<PieceShape>] Die blauen, gesetzten Spielsteine
-  attr_accessor :deployed_blue_pieces
-
-  # @!attribute [r] deployed_yellow_pieces
-  # @return [Array<PieceShape>] Die gelben, gesetzten Spielsteine
-  attr_accessor :deployed_yellow_pieces
+  # @return [Array<Piece>] Die blauen, gesetzten Spielsteine
+  attr_accessor :blue_pieces
 
   # @!attribute [r] deployed_red_pieces
-  # @return [Array<PieceShape>] Die roten, gesetzten Spielsteine
-  attr_accessor :deployed_red_pieces
-
-  # @!attribute [r] deployed_green_pieces
-  # @return [Array<PieceShape>] Die grünen, gesetzten Spielsteine
-  attr_accessor :deployed_green_pieces
+  # @return [Array<Piece>] Die roten, gesetzten Spielsteine
+  attr_accessor :red_pieces
 
   # Erstellt ein neues leeres Spielbrett.
   def initialize(fields = [])
+    @blue_pieces = []
+    @red_pieces = []
     @fields = Board.empty_game_field
     fields.each { |f| add_field(f) }
   end
@@ -67,6 +61,14 @@ class Board
   # @param field [Field] Das einzufügende Feld.
   def add_field(field)
     @fields[field.x][field.y] = field
+
+    if !field.piece.nil?
+      if field.color == Color::RED
+        @red_pieces << field.piece
+      else 
+        @blue_pieces << field.piece
+      end
+    end
   end
 
   # Zugriff auf die Felder des Spielfeldes
@@ -91,39 +93,19 @@ class Board
     field(coordinates.x, coordinates.y)
   end
 
-  # TODO: Redo this recursively, starting from the corresponding corner and then moving alongside edges and corners
+  def fields_of_color(color)
+    fields = []
 
-  # Alle Felder einer bestimmten Farbe
-  #
-  # @param color [Color] Die Farbe der Felder
-  # @return [Array<Field>] Eine Liste aller felder, die die gegebene Farbe haben
-  def fields_of_color(color, fields = [Coordinates.new(0, 0),
-                                       Coordinates.new(0, BOARD_SIZE - 1),
-                                       Coordinates.new(BOARD_SIZE - 1, BOARD_SIZE - 1),
-                                       Coordinates.new(BOARD_SIZE - 1, 0)].select { |it| field_at(it).color == color })
-    copy = Array.new(fields)
-
-    copy.each do |field|
-      [Coordinates.new(1, 0),
-       Coordinates.new(1, -1),
-       Coordinates.new(0, -1),
-       Coordinates.new(-1, -1),
-       Coordinates.new(-1, 0),
-       Coordinates.new(-1, 1),
-       Coordinates.new(0, 1),
-       Coordinates.new(1, 1)].each do |neighbor|
-        new_field = field + neighbor
-        next unless Board.contains(new_field) && @fields[new_field.x][new_field.y].color == color
-
-        fields << new_field unless fields.include?(new_field)
+    (0...BOARD_SIZE).to_a.map do |x|
+      (0...BOARD_SIZE).to_a.map do |y|
+        f = field(x,y)
+        if (f.color == color)
+          fields << f
+        end
       end
     end
 
-    if copy.count == fields.count
-      fields
-    else
-      fields_of_color(color, fields)
-    end
+    fields
   end
 
   # @param it [Coordinates] Die zu untersuchenden Koordinaten
@@ -133,17 +115,13 @@ class Board
   end
 
   # @param color [Color] Die Farbe der Steine
-  # @return [Array<PieceShape>] Eine Liste aller Steintypen, die die gegebene Farbe noch nicht gespielt hat
+  # @return [Array<PieceShape>] Eine Liste aller Steintypen, die die gegebene Farbe gespielt hat
   def deployed_pieces(color)
     case color
     when Color::RED
-      deployed_red_pieces
+      red_pieces
     when Color::BLUE
-      deployed_blue_pieces
-    when Color::YELLOW
-      deployed_yellow_pieces
-    when Color::GREEN
-      deployed_green_pieces
+      blue_pieces
     end
   end
 

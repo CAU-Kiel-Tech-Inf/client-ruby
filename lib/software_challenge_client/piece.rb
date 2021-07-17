@@ -2,88 +2,77 @@
 
 # Ein Spielstein mit Ausrichtung, Koordinaten und Farbe
 class Piece
-  # @!attribute [r] Farbe
+  # @!attribute [rw] Color
   # @return [Color]
-  attr_reader :color
+  attr_accessor :color
 
-  # @!attribute [r] Form
-  # @return [PieceShape]
-  attr_reader :kind
+  # @!attribute [r] Typ des Spielsteins
+  # @return [PieceType]
+  attr_reader :type
 
-  # @!attribute [r] Drehung
-  # @return [Rotation]
-  attr_reader :rotation
-
-  # @!attribute [r] Ob der Stein an der Y-Achse gespiegelt ist
-  # @return [Boolean]
-  attr_reader :is_flipped
-
-  # @!attribute [r] Koordinaten
+  # @!attribute [rw] Koordinaten
   # @return [Coordinates]
-  attr_reader :position
+  attr_accessor :position
 
-  # @!attribute [r] Ein Array der Positionsdaten aller Bestandteile von dem Stein in Board Koordinaten, also schon ggf. gedreht und um position versetzt.
-  # return [Array<Coordinates>]
-  attr_reader :coords
+  # @!attribute [r] tower_height
+  # @return [Integer] Die Anzahl Spielsteine übereinander inklusive des obersten
+  attr_reader :height
 
-  # Erstellt einen neuen leeren Spielstein.
-  def initialize(color, kind, rotation = Rotation::NONE, is_flipped = false, position = Coordinates.origin)
+  # Erstellt einen neuen Spielstein.
+  def initialize(color, type, position = Coordinates.origin, height = 0)
     @color = color
-    @kind = kind
-    @rotation = rotation
-    @is_flipped = is_flipped
+    @type = type
     @position = position
-
-    @coords = coords_priv
+    @height = height
   end
 
-  # Dreht den Stein
-  def rotate!(rotation)
-    @rotation = @rotation.rotate(rotation)
-    @coords = coords_priv
-  end
+  # Berechnet die Koordinaten zu denen sich dieser Spielstein bewegen könnte.
+  #
+  # @return [Array<Coordinates>] Die Zielkoordinaten 
+  def target_coords
+    xdir = 0
+    if color == Color::RED
+      xdir = 1
+    else
+      xdir = -1
+    end
 
-  # Flipped den Stein
-  def flip!(f = true)
-    @is_flipped = @is_flipped ^ f
-    @coords = coords_priv
-  end
+    case type
+    when PieceType::Herzmuschel
+      coords = [Coordinates.new(xdir,-1), Coordinates.new(xdir,1)]
+    when PieceType::Moewe
+      coords = [Coordinates.new(1,0), Coordinates.new(-1,0), Coordinates.new(0,1), 
+        Coordinates.new(0,-1)]
+    when PieceType::Seestern
+      coords = [Coordinates.new(xdir,0), Coordinates.new(1,1), Coordinates.new(-1,1), 
+        Coordinates.new(1,-1), Coordinates.new(-1,-1)]
+    when PieceType::Robbe
+      coords = [Coordinates.new(-1,2), Coordinates.new(1,2), Coordinates.new(-2,1), 
+        Coordinates.new(2,1), Coordinates.new(-1,-2), Coordinates.new(1,-2), 
+        Coordinates.new(-2,-1), Coordinates.new(2,-1)]
+    end
 
-  # Setzt den Stein auf eine Position
-  def locate!(position)
-    @position = position
-    @coords = coords_priv
-  end
-
-  # Verschiebt den Stein
-  def move!(shift)
-    @position = position + shift
-    @coords = coords_priv
-  end
-
-  # Gibt die Fläche der transformierten Steinform von diesem Stein zurück
-  def area()
-    CoordinateSet.new(coords).area
+    coords.map{ |x| x + position }.to_a
   end
 
   def ==(other)
-    color == other.color &&
-      coords == other.coords
+    !other.nil? &&
+      color == other.color &&
+      position == other.position &&
+      type == other.type
   end
 
+  # @return [String] Gibt die String-Repräsentation zurück
   def to_s
-    "#{color.key} #{kind.key} at #{position} rotation #{rotation.key}#{is_flipped ? ' (flipped)' : ''}"
+    "#{color.key} #{type.key} at #{position}"
+  end
+
+  # @return [String] Gibt eine Kurzfassung der String-Repräsentation zurück
+  def to_ss
+    "#{color.key.to_s[0]}#{type.key.to_s[0]}"
   end
 
   def inspect
     to_s
-  end
-
-  private
-
-  def coords_priv
-    kind.transform(@rotation, @is_flipped).transform do |it|
-      Coordinates.new(it.x + @position.x, it.y + @position.y)
-    end.coordinates
   end
 end

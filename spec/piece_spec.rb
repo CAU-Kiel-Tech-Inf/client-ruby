@@ -6,59 +6,16 @@ RSpec.describe Piece do
   subject(:piece) { Piece.new }
 
   it 'has a sensible string representation' do
-    expect(Piece.new(Color::RED, PieceShape::MONO).to_s).to eq("RED MONO at (0, 0) rotation NONE")
-    expect(Piece.new(Color::RED, PieceShape::MONO, Rotation::LEFT, true).to_s).to eq("RED MONO at (0, 0) rotation LEFT (flipped)")
-  end
-
-  def c(x, y)
-    Coordinates.new(x, y)
-  end
-
-  describe 'PENTO_W' do
-    it 'transforms as expected' do
-      expected_transformations = {
-        [Rotation::NONE, false] =>   CoordinateSet.new([c(0, 0), c(0, 1), c(1, 1), c(1, 2), c(2, 2)]),
-        [Rotation::RIGHT, false] =>  CoordinateSet.new([c(0, 2), c(0, 1), c(1, 1), c(1, 0), c(2, 0)]),
-        [Rotation::MIRROR, false] => CoordinateSet.new([c(0, 0), c(1, 0), c(1, 1), c(2, 1), c(2, 2)]),
-        [Rotation::LEFT, false] =>   CoordinateSet.new([c(0, 2), c(1, 2), c(1, 1), c(2, 1), c(2, 0)]),
-        [Rotation::NONE, true] =>    CoordinateSet.new([c(0, 2), c(1, 2), c(1, 1), c(2, 1), c(2, 0)]),
-        [Rotation::RIGHT, true] =>   CoordinateSet.new([c(0, 0), c(1, 0), c(1, 1), c(2, 1), c(2, 2)]),
-        [Rotation::MIRROR, true] =>  CoordinateSet.new([c(0, 2), c(0, 1), c(1, 1), c(1, 0), c(2, 0)]),
-        [Rotation::LEFT, true] =>    CoordinateSet.new([c(0, 0), c(0, 1), c(1, 1), c(1, 2), c(2, 2)])
-      }
-      shape = PieceShape::PENTO_W
-      variants =
-        Rotation.map.zip(Array.new(Rotation.size){false}) +
-        Rotation.map.zip(Array.new(Rotation.size){true})
-      variants.each do |v|
-        transformed = shape.transform(v[0], v[1])
-        expected = expected_transformations[[v[0], v[1]]]
-        expect(transformed).to eq(expected), "sets differ, transformation was to rotate #{v[0].key}#{v[1] ? ' and flip' : ''}"
-      end
-    end
+    expect(Piece.new(Color::RED, PieceType::Herzmuschel).to_s).to eq("RED Herzmuschel at (0, 0)")
+    expect(Piece.new(Color::RED, PieceType::Seestern, Coordinates.new(3,4)).to_s).to eq("RED Seestern at (3, 4)")
   end
 
   it 'has coordinates as position' do
     p = Piece.new(
       Color::RED,
-      PieceShape::MONO,
-      Rotation::NONE,
-      false,
-      Coordinates.new(18, 3)
+      PieceType::Herzmuschel,
+      Coordinates.new(7, 3)
     )
     expect(p.position).to be_a(Coordinates)
-  end
-
-  it 'area methods' do
-    p = Piece.new(
-      Color::RED,
-      PieceShape::PENTO_L,
-      Rotation::RIGHT,
-      false,
-      Coordinates.new(18, 3)
-    )
-    
-    expect(p.area.x).to eq(p.kind.coordinates.area.y)
-    expect(p.area.y).to eq(p.kind.coordinates.area.x)
   end
 end

@@ -28,48 +28,16 @@ RSpec.describe GameRuleLogic do
     before do
       board =
         <<~BOARD
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+          RC RS RR RC RG RG RR RS 
+          __ __ __ __ __ __ __ __ 
+          __ __ __ __ __ __ __ __ 
+          __ __ __ __ __ __ __ __ 
+          __ __ __ __ __ __ __ __ 
+          __ __ __ __ __ __ __ __ 
+          __ __ __ __ __ __ __ __ 
+          BS BR BG BC BR BG BC BS 
       BOARD
       state_from_string!(board, gamestate)
-    end
-
-    it 'calculates current points' do
-      expect(GameRuleLogic.get_points_from_undeployed(gamestate.undeployed_pieces(Color::RED), false)).to eq(0)
-    end
-
-  end
-
-  context 'corner predicate' do
-    it 'identifies all corners as corner' do
-      expect(GameRuleLogic.corner?(Coordinates.new(0, 0))).to be true
-      expect(GameRuleLogic.corner?(Coordinates.new(0, 19))).to be true
-      expect(GameRuleLogic.corner?(Coordinates.new(19, 0))).to be true
-      expect(GameRuleLogic.corner?(Coordinates.new(19, 19))).to be true
-    end
-
-    it 'identifies other places not as corner' do
-      expect(GameRuleLogic.corner?(Coordinates.new(1, 0))).to be false
-      expect(GameRuleLogic.corner?(Coordinates.new(12, 3))).to be false
-      expect(GameRuleLogic.corner?(Coordinates.new(99, 3))).to be false
     end
   end
 
@@ -77,26 +45,14 @@ RSpec.describe GameRuleLogic do
     before do
       board =
         <<~BOARD
-          R R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ G G
-          R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ G
-          R _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ G
-          _ R R R R R _ _ _ _ _ _ _ _ _ _ _ G G _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ G G _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ Y _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-          _ _ _ _ Y _ _ _ _ _ _ _ _ _ _ _ _ B _ _
-          _ _ _ _ Y _ _ _ _ _ _ _ _ _ _ _ B B _ B
-          Y _ _ _ Y _ _ _ _ _ _ _ _ _ _ _ _ B _ B
-          Y Y Y Y _ _ _ _ _ _ _ _ _ _ _ _ _ _ B B
+        __ RS RR RC __ RG RR RS 
+        __ RC __ __ RG __ __ __ 
+        __ __ __ __ __ __ __ __ 
+        __ __ __ __ __ __ __ __ 
+        __ __ __ __ __ __ __ __ 
+        __ __ BR __ __ __ __ __ 
+        __ __ __ __ __ __ __ __ 
+        BS __ BG BC BR BG BC BS 
       BOARD
       state_from_string!(board, gamestate)
     end

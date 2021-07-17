@@ -10,30 +10,37 @@ module GameStateHelpers
   end
 
   def field_from_descriptor(coordinates, descriptor)
-    color = if descriptor == '_'
-              nil
-            else
-              unless Color.to_a.map(&:value).include? descriptor
-                raise BoardFormatError.new("unknown field descriptor #{descriptor}")
-              end
+    piece = nil
 
-              Color.find_by_value(descriptor)
-            end
-    Field.new(coordinates.x, coordinates.y, color)
+    if descriptor != '__' and descriptor != '_'
+      unless Color.to_a.map(&:value).include? descriptor[0]
+        raise BoardFormatError.new("unknown color descriptor #{descriptor[0]}")
+      end
+      color = Color.find_by_value(descriptor[0])
+
+      unless PieceType.to_a.map(&:value).include? descriptor[1]
+        raise BoardFormatError.new("unknown piecetype descriptor #{descriptor[1]}")
+      end
+      type = PieceType.find_by_value(descriptor[1])
+
+      piece = Piece.new(color, type, coordinates)
+    end
+    
+    Field.new(coordinates.x, coordinates.y, piece)
   end
 
   # NOTE that this currently does not update undeployed pieces!
   def state_from_string!(string, gamestate)
     fields = Board.new.field_list
-    field_descriptors = string.gsub(/\s/, '')
+    field_descriptors = string.split(' ')
     board_fields = []
     fields.each do |field|
       board_fields << field_from_descriptor(field.coordinates, field_descriptors[field.y * BOARD_SIZE + field.x])
     end
-    gamestate.ordered_colors = [ Color::BLUE, Color::YELLOW, Color::RED, Color::GREEN ]
-    gamestate.start_piece = PieceShape::PENTO_V
-    gamestate.turn = 3
+    gamestate.turn = 4
     gamestate.round = 2
+    gamestate.add_player(Player.new(Color::RED, "ONE", 0))
+    gamestate.add_player(Player.new(Color::BLUE, "TWO", 0))
     gamestate.board = Board.new(board_fields)
   end
 end
